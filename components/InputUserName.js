@@ -1,13 +1,24 @@
 import { useState } from "react"
+import { useCookies } from 'react-cookie';
 
 export default function InputUserName(props) {
   const [name, setName] = useState('')
+  const [cookies, setCookie] = useCookies(['name']);
+
   const attachName = (e) => {
     setName(() => e.target.value)
   }
+
   const resetUser = () => {
     setName('')
   }
+
+  const addCookie = (newName) => {
+    const day = new Date()
+    day.setDate(day.getDate() + 7)
+    setCookie('name', newName, { path: '/', expires: day })
+  }
+
   return (
     <div>
         <input
@@ -18,7 +29,7 @@ export default function InputUserName(props) {
           value={name}
         />
         <button
-          onClick={() => { props.addUser(name); resetUser(); }}
+          onClick={() => { props.addUser(name); resetUser(); addCookie(name); }}
           className="bg-blue-600 hover:bg-blue-500 text-white rounded px-4 py-2"
         >
           追加

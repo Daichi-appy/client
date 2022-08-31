@@ -1,9 +1,9 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import io from 'socket.io-client'
 import { useState, useEffect } from 'react'
-import InputUserName from '../components/InputUserName'
-import { CookiesProvider } from 'react-cookie';
+import { CookiesProvider, useCookies } from 'react-cookie';
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const socket = io("http://localhost:5000")
 
@@ -12,22 +12,23 @@ export default function Home() {
   const [list, setList] = useState([])
   const [users, setUsers] = useState([])
   const [currentUser, setCurrentUser] = useState("")
+  const [cookies, setCookie] = useCookies(['name'])
   
   // const [username, setUsername] = useState('') 
 
   useEffect(() => {
-    setCurrentUser('ドリップ')
-    // console.log(expire)
+    console.log(cookies.name)
+    // setCurrentUser(getCookie('name'))
   }, [])
+
+  const setCookieName = (cookieName) => {
+    setCurrentUser(cookieName)
+  }
 
   const addUser = (username) => {
     // setUsers([...users, username])
     socket.emit("send_message", { message: username })
   }
-
-  // const nameChange = (e) => {
-  //   setUsername(() => e.target.value)
-  // }
 
   const hundleSendMessage = () => {
     //　サーバーへ送信
@@ -50,18 +51,17 @@ export default function Home() {
 
         <CookiesProvider>
           <div>
-            <h1 className='text-2xl text-indigo-500'>表示名を入力してください</h1>
-            <InputUserName
-              addUser={addUser}
-            />
             {users.map((user, i) => (
               <div key={i}>
                 {user}
               </div>
             ))}
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              { currentUser }
-            </button>
+          </div>
+          <div>
+            あなたの名前:
+            <h1 suppressHydrationWarning>
+              { cookies.name }
+            </h1>
           </div>
         </CookiesProvider>
     </div>
